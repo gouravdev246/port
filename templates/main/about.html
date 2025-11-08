@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}About Me - Portfolio{% endblock %}
+
+{% block content %}
+<!-- About Hero Section -->
+<section class="py-20 gradient-bg text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="fade-in">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">About Me</h1>
+            <p class="text-xl text-blue-100 max-w-3xl mx-auto">
+                Get to know more about my journey, skills, and passion for technology
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- About Content -->
+<section class="py-16 bg-white dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <!-- Profile Image -->
+            <div class="fade-in">
+                {% if about.profile_image %}
+                    <img src="{{ about.profile_image.url }}" alt="Profile" 
+                         class="w-full max-w-md mx-auto rounded-lg shadow-2xl">
+                {% else %}
+                    <div class="w-full max-w-md mx-auto h-96 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg shadow-2xl flex items-center justify-center">
+                        <span class="text-white text-6xl font-bold">{{ about.title|slice:":1"|default:"ME" }}</span>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- About Text -->
+            <div class="fade-in">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
+                    {{ about.title|default:"Hello, I'm a Developer" }}
+                </h2>
+                
+                <div class="prose prose-lg dark:prose-invert max-w-none">
+                    {{ about.content|default:"I'm a passionate developer with a love for creating innovative solutions. I enjoy working with modern technologies and am always eager to learn new things."|linebreaks }}
+                </div>
+                
+                <!-- Tech Stack -->
+                {% if about.tech_stack %}
+                <div class="mt-8">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">My Tech Stack</h3>
+                    <div class="flex flex-wrap gap-2">
+                        {% for tech in about.get_tech_stack_list %}
+                            <span class="tech-badge">{{ tech }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- CTA Buttons -->
+                <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                    <a href="{% url 'main:projects' %}" 
+                       class="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all">
+                        View My Work
+                    </a>
+                    <a href="{% url 'main:contact' %}" 
+                       class="inline-block border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        Get In Touch
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Skills Section -->
+<section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Skills & Expertise</h2>
+            <p class="text-gray-600 dark:text-gray-300 text-lg">Technologies and tools I work with</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for skill in "Frontend Development,Backend Development,Database Design,Cloud Services"|split:"," %}
+                <div class="card-hover bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">{{ skill }}</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Expert-level proficiency in modern {{ skill|lower }} practices and tools.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

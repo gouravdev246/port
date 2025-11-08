@@ -1,0 +1,149 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block title %}Dashboard - Admin{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="card-hover bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div class="flex items-center">
+            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                <i class="fas fa-project-diagram text-blue-600 dark:text-blue-400 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Total Projects</h3>
+                <p class="text-2xl font-bold text-blue-600">{{ total_projects }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-hover bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div class="flex items-center">
+            <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                <i class="fas fa-envelope text-green-600 dark:text-green-400 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Total Messages</h3>
+                <p class="text-2xl font-bold text-green-600">{{ total_messages }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-hover bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div class="flex items-center">
+            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+                <i class="fas fa-envelope-open text-purple-600 dark:text-purple-400 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Unread Messages</h3>
+                <p class="text-2xl font-bold text-purple-600">{{ unread_messages }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-hover bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div class="flex items-center">
+            <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
+                <i class="fas fa-eye text-orange-600 dark:text-orange-400 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Site Views</h3>
+                <p class="text-2xl font-bold text-orange-600">--</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Quick Actions -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Quick Actions</h3>
+        <div class="space-y-3">
+            <a href="{% url 'admin_dashboard:project_create' %}" class="block w-full text-left p-3 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors">
+                <i class="fas fa-plus text-blue-600 mr-2"></i>
+                Add New Project
+            </a>
+            <a href="{% url 'admin_dashboard:about_edit' %}" class="block w-full text-left p-3 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors">
+                <i class="fas fa-user text-green-600 mr-2"></i>
+                Edit About Section
+            </a>
+            <a href="{% url 'admin_dashboard:home_edit' %}" class="block w-full text-left p-3 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors">
+                <i class="fas fa-home text-purple-600 mr-2"></i>
+                Edit Home Page
+            </a>
+            <a href="{% url 'main:home' %}" target="_blank" class="block w-full text-left p-3 bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-lg transition-colors">
+                <i class="fas fa-external-link-alt text-orange-600 mr-2"></i>
+                View Live Site
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Messages -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white">Recent Messages</h3>
+            <a href="{% url 'admin_dashboard:messages_list' %}" class="text-blue-600 hover:text-blue-800 text-sm">View All</a>
+        </div>
+        
+        {% if recent_messages %}
+            <div class="space-y-3">
+                {% for message in recent_messages %}
+                    <div class="border-l-4 {% if message.is_read %}border-gray-300{% else %}border-blue-500{% endif %} pl-4 py-2">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-semibold text-gray-800 dark:text-white">{{ message.name }}</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ message.subject|truncatechars:50 }}</p>
+                            </div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ message.created_at|date:"M d" }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500 dark:text-gray-400 text-center py-8">No messages yet</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Content Overview -->
+<div class="mt-8 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+    <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-6">Content Overview</h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <i class="fas fa-project-diagram text-white text-xl"></i>
+            </div>
+            <h4 class="font-semibold text-gray-800 dark:text-white mb-2">Projects</h4>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">Manage your portfolio projects</p>
+            <a href="{% url 'admin_dashboard:projects_list' %}" class="inline-block mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                Manage Projects
+            </a>
+        </div>
+        
+        <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <i class="fas fa-user text-white text-xl"></i>
+            </div>
+            <h4 class="font-semibold text-gray-800 dark:text-white mb-2">About Section</h4>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">Update your personal information</p>
+            <a href="{% url 'admin_dashboard:about_edit' %}" class="inline-block mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                Edit About
+            </a>
+        </div>
+        
+        <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <i class="fas fa-home text-white text-xl"></i>
+            </div>
+            <h4 class="font-semibold text-gray-800 dark:text-white mb-2">Home Page</h4>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">Customize your landing page</p>
+            <a href="{% url 'admin_dashboard:home_edit' %}" class="inline-block mt-3 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                Edit Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

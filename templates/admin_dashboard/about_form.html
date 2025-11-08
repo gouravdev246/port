@@ -1,0 +1,212 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block title %}Edit About - Admin{% endblock %}
+{% block page_title %}Edit About Section{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Title -->
+        <div>
+            <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Section Title
+            </label>
+            <input type="text" 
+                   name="title" 
+                   id="title" 
+                   value="{{ about.title|default:'' }}" 
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+        </div>
+        
+        <!-- Content -->
+        <div>
+            <div class="flex justify-between items-center mb-2">
+                <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    About Content
+                </label>
+                <button type="button" 
+                        onclick="aiRewriteText('content', 'professional')" 
+                        class="px-3 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-800">
+                    <i class="fas fa-magic mr-1"></i>AI Rewrite
+                </button>
+            </div>
+            <textarea name="content" 
+                      id="content" 
+                      rows="6" 
+                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">{{ about.content|default:'' }}</textarea>
+        </div>
+        
+        <!-- Tech Stack -->
+        <div>
+            <label for="tech_stack" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Tech Stack (comma-separated)
+            </label>
+            <input type="text" 
+                   name="tech_stack" 
+                   id="tech_stack" 
+                   value="{{ about.tech_stack|default:'' }}" 
+                   placeholder="Python, Django, JavaScript, React"
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+        </div>
+        
+        <!-- Skills -->
+        <div>
+            <label for="skills" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Skills (comma-separated)
+            </label>
+            <textarea name="skills" 
+                      id="skills" 
+                      rows="3" 
+                      placeholder="Web Development, Database Design, API Development"
+                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">{{ about.skills|default:'' }}</textarea>
+        </div>
+        
+        <!-- Profile Image -->
+        <div>
+            <label for="profile_image" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Profile Image
+            </label>
+            {% if about.profile_image %}
+                <div class="mb-4">
+                    <img src="{{ about.profile_image.url }}" alt="Profile" class="h-32 rounded-lg shadow">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Current image</p>
+                </div>
+            {% endif %}
+            <input type="file" 
+                   name="profile_image" 
+                   id="profile_image" 
+                   accept="image/*"
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+        </div>
+        
+        <!-- CTA -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="cta_text" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Call to Action Text
+                </label>
+                <input type="text" 
+                       name="cta_text" 
+                       id="cta_text" 
+                       value="{{ about.cta_text|default:'' }}" 
+                       placeholder="Download Resume"
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+            </div>
+            
+            <div>
+                <label for="cta_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Call to Action URL
+                </label>
+                <input type="url" 
+                       name="cta_url" 
+                       id="cta_url" 
+                       value="{{ about.cta_url|default:'' }}" 
+                       placeholder="https://example.com/resume.pdf"
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+            </div>
+        </div>
+        
+        <!-- Submit Button -->
+        <div class="flex justify-end space-x-4">
+            <a href="{% url 'admin_dashboard:dashboard' %}" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                Cancel
+            </a>
+            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                Update About Section
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- AI Rewrite Modal -->
+<div id="aiModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-800 dark:text-white">AI Text Rewriting</h3>
+            <button onclick="closeAIModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Original Text</label>
+            <textarea id="originalText" rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" readonly></textarea>
+        </div>
+        
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rewritten Text</label>
+            <textarea id="rewrittenText" rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"></textarea>
+        </div>
+        
+        <div class="flex justify-end space-x-3">
+            <button onclick="closeAIModal()" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                Cancel
+            </button>
+            <button onclick="applyRewrittenText()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                Apply Changes
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentTextarea = null;
+
+function aiRewriteText(fieldId, tone) {
+    const textarea = document.getElementById(fieldId);
+    const text = textarea.value;
+    
+    if (!text.trim()) {
+        alert('Please enter some text to rewrite');
+        return;
+    }
+    
+    currentTextarea = textarea;
+    
+    document.getElementById('originalText').value = text;
+    document.getElementById('aiModal').classList.remove('hidden');
+    document.getElementById('aiModal').classList.add('flex');
+    
+    // Call AI API
+    fetch("{% url 'admin_dashboard:ai_rewrite' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            text: text,
+            tone: 'professional'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.rewritten_text) {
+            document.getElementById('rewrittenText').value = data.rewritten_text;
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error rewriting text. Please try again.');
+    });
+}
+
+function closeAIModal() {
+    document.getElementById('aiModal').classList.add('hidden');
+    document.getElementById('aiModal').classList.remove('flex');
+}
+
+function applyRewrittenText() {
+    if (currentTextarea) {
+        currentTextarea.value = document.getElementById('rewrittenText').value;
+    }
+    closeAIModal();
+}
+</script>
+{% endblock %}
