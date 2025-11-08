@@ -11,6 +11,7 @@ from decouple import config
 import logging
 from main.models import Project, About, HomePage, ContactMessage
 from main.forms import ContactForm
+from .forms import ProjectForm, AboutForm, HomePageForm
 
 logger = logging.getLogger('login_attempts')
 
@@ -35,27 +36,16 @@ def projects_list(request):
 def project_create(request):
     """Create new project"""
     if request.method == 'POST':
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-        tech_stack = request.POST.get('tech_stack')
-        github_url = request.POST.get('github_url')
-        live_url = request.POST.get('live_url')
-        is_featured = request.POST.get('is_featured') == 'on'
-        image = request.FILES.get('image')
-        
-        project = Project.objects.create(
-            title=title,
-            description=description,
-            tech_stack=tech_stack,
-            github_url=github_url,
-            live_url=live_url,
-            is_featured=is_featured,
-            image=image
-        )
-        messages.success(request, 'Project created successfully!')
-        return redirect('admin_dashboard:projects_list')
+        form = ProjectForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Project created successfully!')
+            return redirect('admin_dashboard:projects_list')
+    else:
+        form = ProjectForm()
     
-    return render(request, 'admin_dashboard/project_form.html')
+    return render(request, 'admin_dashboard/project_form.html', {'form': form})
+
 
 @login_required
 def project_edit(request, pk):
@@ -63,21 +53,15 @@ def project_edit(request, pk):
     project = get_object_or_404(Project, pk=pk)
     
     if request.method == 'POST':
-        project.title = request.POST.get('title')
-        project.description = request.POST.get('description')
-        project.tech_stack = request.POST.get('tech_stack')
-        project.github_url = request.POST.get('github_url')
-        project.live_url = request.POST.get('live_url')
-        project.is_featured = request.POST.get('is_featured') == 'on'
-        
-        if request.FILES.get('image'):
-            project.image = request.FILES.get('image')
-        
-        project.save()
-        messages.success(request, 'Project updated successfully!')
-        return redirect('admin_dashboard:projects_list')
+        form = ProjectForm(request.POST, request.FILES, instance=project)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Project updated successfully!')
+            return redirect('admin_dashboard:projects_list')
+    else:
+        form = ProjectForm(instance=project)
     
-    return render(request, 'admin_dashboard/project_form.html', {'project': project})
+    return render(request, 'admin_dashboard/project_form.html', {'form': form, 'project': project})
 
 @login_required
 def project_delete(request, pk):
@@ -96,21 +80,15 @@ def about_edit(request):
     about, created = About.objects.get_or_create(pk=1)
     
     if request.method == 'POST':
-        about.title = request.POST.get('title')
-        about.content = request.POST.get('content')
-        about.tech_stack = request.POST.get('tech_stack')
-        about.skills = request.POST.get('skills')
-        about.cta_text = request.POST.get('cta_text')
-        about.cta_url = request.POST.get('cta_url')
-        
-        if request.FILES.get('profile_image'):
-            about.profile_image = request.FILES.get('profile_image')
-        
-        about.save()
-        messages.success(request, 'About section updated successfully!')
-        return redirect('admin_dashboard:dashboard')
+        form = AboutForm(request.POST, request.FILES, instance=about)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'About section updated successfully!')
+            return redirect('admin_dashboard:dashboard')
+    else:
+        form = AboutForm(instance=about)
     
-    return render(request, 'admin_dashboard/about_form.html', {'about': about})
+    return render(request, 'admin_dashboard/about_form.html', {'form': form, 'about': about})
 
 @login_required
 def home_edit(request):
@@ -118,20 +96,15 @@ def home_edit(request):
     home, created = HomePage.objects.get_or_create(pk=1)
     
     if request.method == 'POST':
-        home.hero_title = request.POST.get('hero_title')
-        home.hero_subtitle = request.POST.get('hero_subtitle')
-        home.hero_cta_text = request.POST.get('hero_cta_text')
-        home.hero_cta_url = request.POST.get('hero_cta_url')
-        home.tech_stack_title = request.POST.get('tech_stack_title')
-        home.tech_stack = request.POST.get('tech_stack')
-        home.projects_title = request.POST.get('projects_title')
-        home.projects_subtitle = request.POST.get('projects_subtitle')
-        
-        home.save()
-        messages.success(request, 'Home page updated successfully!')
-        return redirect('admin_dashboard:dashboard')
+        form = HomePageForm(request.POST, instance=home)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Home page updated successfully!')
+            return redirect('admin_dashboard:dashboard')
+    else:
+        form = HomePageForm(instance=home)
     
-    return render(request, 'admin_dashboard/home_form.html', {'home': home})
+    return render(request, 'admin_dashboard/home_form.html', {'form': form, 'home': home})
 
 @login_required
 def messages_list(request):
